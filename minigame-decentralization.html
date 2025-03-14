@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Decentralized Network Game - Difficulty & Sound</title>
+
+  <style>
+
+    /* General and Mobile-Friendly Styles */
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+
+      background: linear-gradient(135deg, #1a1a1a, #333);
+
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+      color: #fff;
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      min-height: 100vh;
+
+    }
+
+    #ticker {
+
+      width: 100%;
+
+      overflow: hidden;
+
+      white-space: nowrap;
+
+      position: fixed;
+
+      top: 0;
+
+      background: #ffcc00;
+
+      color: #000;
+
+      font-size: 18px;
+
+      padding: 10px 0;
+
+      z-index: 1000;
+
+    }
+
+    #container {
+
+      margin-top: 70px; /* leave space for the ticker */
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      width: 90%;
+
+    }
+
+    #difficultyContainer, #soundToggleContainer {
+
+      margin: 10px;
+
+      font-size: 18px;
+
+      text-align: center;
+
+    }
+
+    #gameContainer {
+
+      width: 100%;
+
+      max-width: 800px;
+
+      text-align: center;
+
+    }
+
+    canvas {
+
+      background: #222;
+
+      border: 2px solid #fff;
+
+      border-radius: 10px;
+
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+
+      margin-top: 20px;
+
+      width: 100%;
+
+      height: auto;
+
+    }
+
+    #controls {
+
+      margin-top: 15px;
+
+    }
+
+    button {
+
+      margin: 5px;
+
+      padding: 10px 20px;
+
+      font-size: 16px;
+
+      border: none;
+
+      cursor: pointer;
+
+      border-radius: 5px;
+
+      transition: background 0.3s, transform 0.3s;
+
+    }
+
+    #startBtn { background: #28a745; color: #fff; }
+
+    #pauseBtn { background: #ffc107; color: #fff; }
+
+    #restartBtn { background: #dc3545; color: #fff; }
+
+    button:hover { transform: scale(1.05); }
+
+    #timer { font-size: 20px; margin-top: 10px; }
+
+    #progressBarContainer {
+
+      width: 80%;
+
+      background: #444;
+
+      height: 20px;
+
+      margin: 15px auto;
+
+      border-radius: 5px;
+
+      overflow: hidden;
+
+    }
+
+    #progressBar {
+
+      height: 100%;
+
+      width: 0%;
+
+      background: red;
+
+      border-radius: 5px;
+
+      transition: width 0.3s, background 0.3s;
+
+    }
+
+    #colorLegend {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      width: 80%;
+
+      margin: 5px auto;
+
+      font-size: 14px;
+
+      color: lightgray;
+
+    }
+
+    #message {
+
+      font-size: 22px;
+
+      margin-top: 15px;
+
+      font-weight: bold;
+
+    }
+
+    #tooltip {
+
+      position: absolute;
+
+      background: rgba(0,0,0,0.8);
+
+      color: #fff;
+
+      padding: 5px 10px;
+
+      border-radius: 5px;
+
+      font-size: 14px;
+
+      pointer-events: none;
+
+      opacity: 0;
+
+      transition: opacity 0.3s;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- Ticker with game instructions -->
+
+  <div id="ticker">
+
+    <marquee>
+
+      Click to add nodes. Your goal is to decentralize the network by spreading nodes away from the center while a central force pulls them inward.
+
+      Reach 30+ nodes and keep them decentralized to win!
+
+    </marquee>
+
+  </div>
+
+
+
+  <div id="container">
+
+    <!-- Difficulty selection -->
+
+    <div id="difficultyContainer">
+
+      <label for="difficultySelect">Select Difficulty: </label>
+
+      <select id="difficultySelect">
+
+        <option value="easy">Easy</option>
+
+        <option value="medium" selected>Medium</option>
+
+        <option value="hard">Hard</option>
+
+      </select>
+
+    </div>
+
+    <!-- Sound toggle -->
+
+    <div id="soundToggleContainer">
+
+      <label for="soundToggle">Sound: </label>
+
+      <input type="checkbox" id="soundToggle" checked>
+
+    </div>
+
+    <div id="gameContainer">
+
+      <canvas id="gameCanvas"></canvas>
+
+      <div id="controls">
+
+        <button id="startBtn">Start</button>
+
+        <button id="pauseBtn">Pause</button>
+
+        <button id="restartBtn">Restart</button>
+
+      </div>
+
+      <div id="timer">Time Left: <span id="timeLeft">60</span> sec</div>
+
+      <div id="progressBarContainer">
+
+        <div id="progressBar"></div>
+
+      </div>
+
+      <div id="colorLegend">
+
+        <span>Centralized (Red)</span>
+
+        <span>Decentralized (Green)</span>
+
+      </div>
+
+      <div id="message"></div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Background Music (looping) -->
+
+  <audio id="bgMusic" loop>
+
+    <source src="https://actions.google.com/sounds/v1/ambiences/office_background.ogg" type="audio/ogg">
+
+    Your browser does not support the audio element.
+
+  </audio>
+
+
+
+  <div id="tooltip"></div>
+
+
+
+  <script>
+
+    // Global variables and settings
+
+    const canvas = document.getElementById("gameCanvas");
+
+    const ctx = canvas.getContext("2d");
+
+    const container = document.getElementById("gameContainer");
+
+    // Set canvas dimensions responsive to container width
+
+    canvas.width = container.offsetWidth;
+
+    canvas.height = 500;
+
+    let nodes = [];
+
+    let gameActive = false;
+
+    let timeLeft = 60;
+
+    let timerInterval;
+
+    const progressBar = document.getElementById("progressBar");
+
+    const message = document.getElementById("message");
+
+    const tooltip = document.getElementById("tooltip");
+
+    const difficultySelect = document.getElementById("difficultySelect");
+
+    const soundToggle = document.getElementById("soundToggle");
+
+    let soundOn = soundToggle.checked;
+
+    
+
+    // Setup Audio Elements
+
+    const bgMusic = document.getElementById("bgMusic");
+
+    const clickSound = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+
+    const winSound = new Audio("https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum.ogg");
+
+    const loseSound = new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
+
+
+
+    // Center of canvas for central force and decentralization metric.
+
+    const centerX = canvas.width / 2;
+
+    const centerY = canvas.height / 2;
+
+    // Default central force value (adjusted via difficulty)
+
+    let centralForceValue = 0.1;
+
+    function updateDifficulty() {
+
+      const level = difficultySelect.value;
+
+      if (level === "easy") {
+
+        centralForceValue = 0.05;
+
+      } else if (level === "medium") {
+
+        centralForceValue = 0.1;
+
+      } else if (level === "hard") {
+
+        centralForceValue = 0.2;
+
+      }
+
+    }
+
+    updateDifficulty();
+
+    difficultySelect.addEventListener("change", updateDifficulty);
+
+
+
+    // Update sound toggle
+
+    soundToggle.addEventListener("change", function() {
+
+      soundOn = this.checked;
+
+      if (soundOn && gameActive) {
+
+        bgMusic.play();
+
+      } else {
+
+        bgMusic.pause();
+
+      }
+
+    });
+
+
+
+    class Node {
+
+      constructor(x, y) {
+
+        this.x = x;
+
+        this.y = y;
+
+        // Communication color (starts as red)
+
+        this.color = "red";
+
+      }
+
+      draw() {
+
+        // Compute decentralization based on distance from center.
+
+        let dx = this.x - centerX;
+
+        let dy = this.y - centerY;
+
+        let dist = Math.hypot(dx, dy);
+
+        // Maximum possible distance from center (to a corner)
+
+        let maxDist = Math.hypot(centerX, centerY);
+
+        let normalized = Math.min(dist / maxDist, 1);
+
+        // Interpolate hue: 0 (red) to 120 (green)
+
+        let hue = normalized * 120;
+
+        let decentralizationColor = `hsl(${hue}, 100%, 50%)`;
+
+        // Draw node: fill shows decentralization (position) and border shows communication color.
+
+        ctx.beginPath();
+
+        ctx.arc(this.x, this.y, 20, 0, Math.PI * 2);
+
+        ctx.fillStyle = decentralizationColor;
+
+        ctx.fill();
+
+        ctx.lineWidth = 3;
+
+        ctx.strokeStyle = this.color;
+
+        ctx.stroke();
+
+      }
+
+      findNearestNeighbor() {
+
+        let nearest = null;
+
+        let minDist = Infinity;
+
+        for (let node of nodes) {
+
+          if (node !== this) {
+
+            let d = Math.hypot(this.x - node.x, this.y - node.y);
+
+            if (d < minDist) {
+
+              minDist = d;
+
+              nearest = node;
+
+            }
+
+          }
+
+        }
+
+        return nearest;
+
+      }
+
+      communicate() {
+
+        let neighbor = this.findNearestNeighbor();
+
+        if (neighbor) {
+
+          drawLine(this, neighbor);
+
+          let oldColor = this.color;
+
+          this.color = blendColors(this.color, neighbor.color);
+
+          if (oldColor !== this.color) {
+
+            showTooltip(`Color blended: ${oldColor} ? ${this.color}`, this.x, this.y);
+
+          }
+
+        }
+
+      }
+
+    }
+
+
+
+    function drawLine(node1, node2) {
+
+      ctx.beginPath();
+
+      ctx.moveTo(node1.x, node1.y);
+
+      ctx.lineTo(node2.x, node2.y);
+
+      ctx.strokeStyle = "#00ff00";
+
+      ctx.lineWidth = 2;
+
+      ctx.stroke();
+
+    }
+
+
+
+    // Blend discrete colors along the pathway from red ? orange ? yellow ? lightgreen ? green.
+
+    function blendColors(color1, color2) {
+
+      const colors = { red: 0, orange: 20, yellow: 40, lightgreen: 60, green: 80 };
+
+      let avgValue = (colors[color1] + colors[color2]) / 2;
+
+      if (avgValue < 10) return "red";
+
+      if (avgValue < 30) return "orange";
+
+      if (avgValue < 50) return "yellow";
+
+      if (avgValue < 70) return "lightgreen";
+
+      return "green";
+
+    }
+
+
+
+    function showTooltip(text, x, y) {
+
+      tooltip.textContent = text;
+
+      tooltip.style.left = (x + canvas.offsetLeft + 25) + "px";
+
+      tooltip.style.top = (y + canvas.offsetTop - 10) + "px";
+
+      tooltip.style.opacity = 1;
+
+      setTimeout(() => { tooltip.style.opacity = 0; }, 1000);
+
+    }
+
+
+
+    // Apply the central force to pull nodes inward.
+
+    function applyCentralForce(node) {
+
+      let dx = centerX - node.x;
+
+      let dy = centerY - node.y;
+
+      let dist = Math.hypot(dx, dy);
+
+      if (dist > 0) {
+
+        node.x += (dx / dist) * centralForceValue;
+
+        node.y += (dy / dist) * centralForceValue;
+
+        // If a node gets too close to the center, reset its communication color to red.
+
+        if (dist < 50) { node.color = "red"; }
+
+      }
+
+    }
+
+
+
+    // Update progress bar based on decentralization metric (average distance).
+
+    function updateProgress() {
+
+      if (nodes.length === 0) {
+
+        progressBar.style.width = "0%";
+
+        return;
+
+      }
+
+      let totalDist = 0;
+
+      nodes.forEach(node => {
+
+        totalDist += Math.hypot(node.x - centerX, node.y - centerY);
+
+      });
+
+      let avgDist = totalDist / nodes.length;
+
+      let maxDist = Math.hypot(centerX, centerY);
+
+      let percentage = Math.min((avgDist / maxDist) * 100, 100);
+
+      progressBar.style.width = percentage + "%";
+
+      progressBar.style.background = percentage >= 60 ? "green" : "red";
+
+    }
+
+
+
+    // Compute decentralization metric (average decentralization percentage).
+
+    function getDecentralizationMetric() {
+
+      if (nodes.length === 0) return 0;
+
+      let totalDist = 0;
+
+      nodes.forEach(node => {
+
+        totalDist += Math.hypot(node.x - centerX, node.y - centerY);
+
+      });
+
+      let avgDist = totalDist / nodes.length;
+
+      let maxDist = Math.hypot(centerX, centerY);
+
+      return Math.min((avgDist / maxDist) * 100, 100);
+
+    }
+
+
+
+    canvas.addEventListener("click", (e) => {
+
+      if (!gameActive) return;
+
+      let rect = canvas.getBoundingClientRect();
+
+      let node = new Node(e.clientX - rect.left, e.clientY - rect.top);
+
+      nodes.push(node);
+
+      updateProgress();
+
+      if (soundOn) {
+
+        clickSound.currentTime = 0;
+
+        clickSound.play();
+
+      }
+
+    });
+
+
+
+    function animate() {
+
+      if (!gameActive) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw a faint circle at the center representing the centralizing force.
+
+      ctx.beginPath();
+
+      ctx.arc(centerX, centerY, 50, 0, Math.PI * 2);
+
+      ctx.strokeStyle = "rgba(255,0,0,0.3)";
+
+      ctx.lineWidth = 2;
+
+      ctx.stroke();
+
+
+
+      nodes.forEach(node => {
+
+        applyCentralForce(node);
+
+        node.communicate();
+
+        node.draw();
+
+      });
+
+      updateProgress();
+
+      requestAnimationFrame(animate);
+
+    }
+
+
+
+    function startGame() {
+
+      if (gameActive) return;
+
+      gameActive = true;
+
+      message.textContent = "";
+
+      animate();
+
+      timerInterval = setInterval(() => {
+
+        timeLeft--;
+
+        document.getElementById("timeLeft").textContent = timeLeft;
+
+        if (timeLeft <= 0) endGame();
+
+      }, 1000);
+
+      if (soundOn) {
+
+        bgMusic.currentTime = 0;
+
+        bgMusic.play();
+
+      }
+
+    }
+
+
+
+    function pauseGame() {
+
+      gameActive = false;
+
+      clearInterval(timerInterval);
+
+      bgMusic.pause();
+
+    }
+
+
+
+    function restartGame() {
+
+      gameActive = false;
+
+      clearInterval(timerInterval);
+
+      timeLeft = 60;
+
+      document.getElementById("timeLeft").textContent = timeLeft;
+
+      nodes = [];
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      progressBar.style.width = "0%";
+
+      message.textContent = "";
+
+      bgMusic.pause();
+
+      bgMusic.currentTime = 0;
+
+    }
+
+
+
+    function endGame() {
+
+      clearInterval(timerInterval);
+
+      gameActive = false;
+
+      let decentralization = getDecentralizationMetric();
+
+      if (nodes.length >= 30 && decentralization >= 60) {
+
+        message.textContent = `?? You Win! ${nodes.length} nodes and ${Math.round(decentralization)}% decentralization!`;
+
+        message.style.color = "limegreen";
+
+        if (soundOn) winSound.play();
+
+      } else {
+
+        message.textContent = `? You Lose! ${nodes.length} nodes and only ${Math.round(decentralization)}% decentralization.`;
+
+        message.style.color = "red";
+
+        if (soundOn) loseSound.play();
+
+      }
+
+      bgMusic.pause();
+
+    }
+
+
+
+    document.getElementById("startBtn").addEventListener("click", startGame);
+
+    document.getElementById("pauseBtn").addEventListener("click", pauseGame);
+
+    document.getElementById("restartBtn").addEventListener("click", restartGame);
+
+  </script>
+
+</body>
+
+</html>
+
+
