@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Bitcoin Hodl Simulator</title>
+
+  <style>
+
+    body {
+
+      font-family: Arial, sans-serif;
+
+      background-color: #1e1e1e;
+
+      color: #ffffff;
+
+      text-align: center;
+
+      margin: 0;
+
+      padding: 20px;
+
+    }
+
+    h1 {
+
+      color: #f7931a;
+
+    }
+
+    .container {
+
+      max-width: 600px;
+
+      margin: 0 auto;
+
+      padding: 20px;
+
+      background-color: #2a2a2a;
+
+      border-radius: 10px;
+
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+    }
+
+    .crypto-price {
+
+      font-size: 24px;
+
+      margin: 20px 0;
+
+    }
+
+    .buttons {
+
+      display: flex;
+
+      justify-content: space-around;
+
+      margin: 20px 0;
+
+    }
+
+    button {
+
+      padding: 10px 20px;
+
+      font-size: 16px;
+
+      border: none;
+
+      border-radius: 5px;
+
+      cursor: pointer;
+
+      transition: background-color 0.3s;
+
+    }
+
+    button.buy {
+
+      background-color: #4caf50;
+
+      color: white;
+
+    }
+
+    button.sell {
+
+      background-color: #f44336;
+
+      color: white;
+
+    }
+
+    button.hodl {
+
+      background-color: #f7931a;
+
+      color: white;
+
+    }
+
+    button:hover {
+
+      opacity: 0.8;
+
+    }
+
+    .balance {
+
+      font-size: 18px;
+
+      margin-top: 20px;
+
+    }
+
+    .message {
+
+      margin-top: 20px;
+
+      font-size: 18px;
+
+      color: #f7931a;
+
+    }
+
+    input {
+
+      padding: 10px;
+
+      font-size: 16px;
+
+      border-radius: 5px;
+
+      border: 1px solid #ccc;
+
+      width: 100px;
+
+      margin: 10px;
+
+    }
+
+    .goal-tracker {
+
+      margin-top: 20px;
+
+    }
+
+    .progress-bar {
+
+      width: 100%;
+
+      height: 20px;
+
+      background-color: #444;
+
+      border-radius: 10px;
+
+      overflow: hidden;
+
+    }
+
+    #progress {
+
+      height: 100%;
+
+      background-color: #f7931a;
+
+      transition: width 0.5s;
+
+    }
+
+    .achievements {
+
+      margin-top: 20px;
+
+    }
+
+    .achievements ul {
+
+      list-style-type: none;
+
+      padding: 0;
+
+    }
+
+    .achievements li {
+
+      margin: 5px 0;
+
+      color: #f7931a;
+
+    }
+
+    /* Updated ticker (transaction history) styles */
+
+    .history {
+
+      margin-top: 20px;
+
+      text-align: left;
+
+      height: 100px;
+
+      overflow-y: auto;
+
+      position: relative;
+
+      background-color: #333;
+
+      border-radius: 5px;
+
+      padding: 5px;
+
+    }
+
+    .history h3 {
+
+      margin-top: 0;
+
+    }
+
+    /* Custom text (set by developer) within the history container */
+
+    .history #custom-text {
+
+      margin-bottom: 10px;
+
+      color: #fff;
+
+    }
+
+    .history ul {
+
+      list-style-type: none;
+
+      padding: 0;
+
+      margin: 0;
+
+    }
+
+    .history li {
+
+      margin: 5px 0;
+
+      color: #ccc;
+
+      padding: 5px 10px;
+
+    }
+
+    .affiliate {
+
+      margin-top: 20px;
+
+    }
+
+    .affiliate a {
+
+      color: #4caf50;
+
+      text-decoration: none;
+
+    }
+
+    .affiliate a:hover {
+
+      text-decoration: underline;
+
+    }
+
+    .user-stats {
+
+      margin-top: 20px;
+
+      font-size: 16px;
+
+    }
+
+    .hodl-modal {
+
+      display: none;
+
+      position: fixed;
+
+      top: 50%;
+
+      left: 50%;
+
+      transform: translate(-50%, -50%);
+
+      background-color: #2a2a2a;
+
+      padding: 20px;
+
+      border-radius: 10px;
+
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+      z-index: 1000;
+
+    }
+
+    .hodl-modal input {
+
+      width: 80%;
+
+      margin: 10px 0;
+
+    }
+
+    .hodl-modal button {
+
+      margin: 10px 5px;
+
+    }
+
+    .countdown {
+
+      margin-top: 10px;
+
+      font-size: 16px;
+
+      color: #f7931a;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>?? Bitcoin Hodl Simulator</h1>
+
+    <div class="crypto-price">
+
+      Bitcoin (BTC): <span id="btc-price">Loading...</span>
+
+    </div>
+
+
+
+      <label for="sats-amount">Enter Satoshis:</label>
+
+      <input type="number" id="sats-amount" min="1" value="1000">
+
+    </div>
+
+    <div class="buttons">
+
+      <button class="buy" onclick="buyCrypto()">Buy Sats</button>
+
+      <button class="sell" onclick="sellCrypto()">Sell Sats</button>
+
+      <button class="hodl" onclick="openHodlModal()">HODL ????</button>
+
+    </div>
+
+    <div class="history" onmouseenter="pauseTicker()" onmouseleave="resumeTicker()">
+
+      <h3>Transaction History</h3>
+
+      <!-- Custom text added by the developer -->
+
+      <div id="custom-text"></div>
+
+      <ul id="history-list"></ul>
+
+    </div>
+
+    <div class="balance">
+
+      Your Balance: $<span id="balance">1000</span>
+
+      <br>
+
+      Your BTC: <span id="btc-amount">0</span>
+
+      <br>
+
+      Your Sats: <span id="sats-balance">0</span>
+
+      <br>
+
+      Locked Sats: <span id="locked-sats">0</span>
+
+      <div class="countdown" id="countdown"></div>
+
+    </div>
+
+    <div class="goal-tracker">
+
+      <h3>Goal: $10,000</h3>
+
+      <div class="progress-bar">
+
+        <div id="progress" style="width: 0%;"></div>
+
+      </div>
+
+    </div>
+
+    <div class="achievements">
+
+      <h3>Achievements</h3>
+
+      <ul id="achievements-list"></ul>
+
+    </div>
+
+    <div class="affiliate">
+
+      <h3>Recommended Tools</h3>
+
+      <p>Check out these crypto tools to enhance your experience:</p>
+
+      <ul>
+
+        <li><a href="https://www.coinbase.com/join/your-affiliate-code" target="_blank">Coinbase - Buy/Sell Crypto</a></li>
+
+        <li><a href="https://www.binance.com/en/register?ref=your-affiliate-code" target="_blank">Binance - Trade Crypto</a></li>
+
+        <li><a href="https://shop.ledger.com/pages/ledger-nano-x?r=your-affiliate-code" target="_blank">Ledger - Secure Your Crypto</a></li>
+
+      </ul>
+
+    </div>
+
+    <div class="user-stats">
+
+      <h3>User Statistics</h3>
+
+      <p>Daily Users: <span id="daily-users">0</span></p>
+
+      <p>Total Users: <span id="total-users">0</span></p>
+
+    </div>
+
+    <div class="message" id="message"></div>
+
+  </div>
+
+
+
+  <!-- HODL Modal -->
+
+  <div class="hodl-modal" id="hodl-modal">
+
+    <h3>HODL Your Bitcoin</h3>
+
+    <p>Lock in your current holdings for a set time period.</p>
+
+    <label for="hodl-sats">Enter Satoshis to Lock:</label>
+
+    <input type="number" id="hodl-sats" min="1" value="1000">
+
+    <label for="hodl-time">Choose HODL Time (minutes):</label>
+
+    <input type="number" id="hodl-time" min="1" value="1">
+
+    <button onclick="startHodl()">Start HODLing</button>
+
+    <button onclick="closeHodlModal()">Cancel</button>
+
+  </div>
+
+
+
+  <script>
+
+    // Developer can customize the custom text below:
+
+    const customTextHeading = "Custom Message";
+
+    const customTextBody = "This is a sponsored message. Welcome to the BTC trader simulator.";
+
+
+
+    let balance = 1000; // Starting balance in USD (will be updated by the starting balance input)
+
+    let satsAmount = 0; // Starting Satoshis
+
+    let lockedSats = 0; // Locked Satoshis during HODL
+
+    let btcPrice = 0; // Current BTC price in USD
+
+
+
+    const SATS_PER_BTC = 100000000; // 1 BTC = 100,000,000 Satoshis
+
+    const GOAL = 10000; // Goal balance in USD
+
+
+
+    // Achievements
+
+    const achievements = [
+
+      { name: 'First Purchase', unlocked: false, condition: () => satsAmount > 0 },
+
+      { name: 'HODLer', unlocked: false, condition: () => satsAmount >= 1000000 },
+
+      { name: 'Bitcoin Whale', unlocked: false, condition: () => satsAmount >= SATS_PER_BTC }
+
+    ];
+
+
+
+    // Transaction history
+
+    const history = [];
+
+
+
+    // User tracking
+
+    let dailyUsers = 0;
+
+    let totalUsers = 0;
+
+
+
+    // HODL variables
+
+    let hodlStartPrice = 0;
+
+    let hodlTimer = null;
+
+    let hodlEndTime = null;
+
+
+
+    // Auto-scroll control
+
+    let autoScrollPaused = false;
+
+    let autoScrollTimeout;
+
+    function autoScroll() {
+
+      if (!autoScrollPaused) {
+
+        const historyContainer = document.querySelector('.history');
+
+        if (historyContainer.scrollTop < historyContainer.scrollHeight - historyContainer.clientHeight) {
+
+          historyContainer.scrollTop += 1;
+
+        } else {
+
+          historyContainer.scrollTop = 0;
+
+        }
+
+      }
+
+    }
+
+    setInterval(autoScroll, 50);
+
+
+
+    function pauseTicker() {
+
+      autoScrollPaused = true;
+
+    }
+
+
+
+    function resumeTicker() {
+
+      autoScrollPaused = false;
+
+    }
+
+
+
+    document.querySelector('.history').addEventListener('wheel', function() {
+
+      autoScrollPaused = true;
+
+      clearTimeout(autoScrollTimeout);
+
+      autoScrollTimeout = setTimeout(() => {
+
+        autoScrollPaused = false;
+
+      }, 1000);
+
+    });
+
+
+
+    // Check if the user is new for the day
+
+    function trackUser() {
+
+      const today = new Date().toDateString();
+
+      const lastVisit = localStorage.getItem('lastVisit');
+
+      if (lastVisit !== today) {
+
+        dailyUsers++;
+
+        totalUsers++;
+
+        localStorage.setItem('lastVisit', today);
+
+        localStorage.setItem('totalUsers', totalUsers);
+
+      } else {
+
+        totalUsers = parseInt(localStorage.getItem('totalUsers')) || 0;
+
+      }
+
+      document.getElementById('daily-users').textContent = dailyUsers;
+
+      document.getElementById('total-users').textContent = totalUsers;
+
+    }
+
+
+
+    // Display custom text above the transaction history
+
+    function displayCustomText() {
+
+      const customTextContainer = document.getElementById('custom-text');
+
+      if (customTextHeading || customTextBody) {
+
+        customTextContainer.innerHTML = `<h4>${customTextHeading}</h4><p>${customTextBody}</p>`;
+
+      }
+
+    }
+
+
+
+    // Fetch real-time BTC price with a backup provider
+
+    async function fetchBtcPrice() {
+
+      try {
+
+        const response = await fetch('https://api.coincap.io/v2/assets/bitcoin');
+
+        if (!response.ok) throw new Error('Primary provider error');
+
+        const data = await response.json();
+
+        btcPrice = parseFloat(data.data.priceUsd);
+
+        document.getElementById('btc-price').textContent = `$${btcPrice.toFixed(2)}`;
+
+      } catch (error) {
+
+        console.error('Primary provider failed, trying backup:', error);
+
+        try {
+
+          const response = await fetch('https://api.coinbase.com/v2/prices/spot?currency=USD');
+
+          if (!response.ok) throw new Error('Backup provider error');
+
+          const data = await response.json();
+
+          btcPrice = parseFloat(data.data.amount);
+
+          document.getElementById('btc-price').textContent = `$${btcPrice.toFixed(2)}`;
+
+        } catch (backupError) {
+
+          console.error('Backup provider also failed:', backupError);
+
+          document.getElementById('btc-price').textContent = 'Error fetching price';
+
+        }
+
+      }
+
+    }
+
+
+
+    // Update BTC price every 3 seconds
+
+    setInterval(fetchBtcPrice, 3000);
+
+    fetchBtcPrice();
+
+
+
+
+
+
+
+    // Buy Satoshis
+
+    function buyCrypto() {
+
+      const satsToBuy = parseInt(document.getElementById('sats-amount').value);
+
+      if (isNaN(satsToBuy)) {
+
+        showMessage('Please enter a valid number of Satoshis.');
+
+        return;
+
+      }
+
+      const costInUSD = (satsToBuy / SATS_PER_BTC) * btcPrice;
+
+      if (balance >= costInUSD) {
+
+        balance -= costInUSD;
+
+        satsAmount += satsToBuy;
+
+        updateBalance();
+
+        const timestamp = new Date().toLocaleTimeString();
+
+        showMessage(`You bought ${satsToBuy.toLocaleString()} Sats for $${costInUSD.toFixed(2)}!`);
+
+        addHistory(`[${timestamp}] Bought ${satsToBuy.toLocaleString()} Sats for $${costInUSD.toFixed(2)} (BTC Price: $${btcPrice.toFixed(2)})`);
+
+        checkAchievements();
+
+      } else {
+
+        showMessage(`Not enough balance to buy ${satsToBuy.toLocaleString()} Sats. You need $${(costInUSD - balance).toFixed(2)} more.`);
+
+      }
+
+    }
+
+
+
+    // Sell Satoshis
+
+    function sellCrypto() {
+
+      const satsToSell = parseInt(document.getElementById('sats-amount').value);
+
+      if (isNaN(satsToSell)) {
+
+        showMessage('Please enter a valid number of Satoshis.');
+
+        return;
+
+      }
+
+      const availableSats = satsAmount - lockedSats;
+
+      if (availableSats >= satsToSell) {
+
+        const earningsInUSD = (satsToSell / SATS_PER_BTC) * btcPrice;
+
+        balance += earningsInUSD;
+
+        satsAmount -= satsToSell;
+
+        updateBalance();
+
+        const timestamp = new Date().toLocaleTimeString();
+
+        showMessage(`You sold ${satsToSell.toLocaleString()} Sats for $${earningsInUSD.toFixed(2)}!`);
+
+        addHistory(`[${timestamp}] Sold ${satsToSell.toLocaleString()} Sats for $${earningsInUSD.toFixed(2)} (BTC Price: $${btcPrice.toFixed(2)})`);
+
+        checkAchievements();
+
+      } else {
+
+        showMessage(`Not enough Sats to sell. You only have ${availableSats.toLocaleString()} Sats available (${lockedSats.toLocaleString()} Sats are locked).`);
+
+      }
+
+    }
+
+
+
+    // Open HODL modal
+
+    function openHodlModal() {
+
+      document.getElementById('hodl-modal').style.display = 'block';
+
+    }
+
+
+
+    // Close HODL modal
+
+    function closeHodlModal() {
+
+      document.getElementById('hodl-modal').style.display = 'none';
+
+    }
+
+
+
+    // Start HODLing
+
+    function startHodl() {
+
+      const satsToLock = parseInt(document.getElementById('hodl-sats').value);
+
+      const hodlTime = parseInt(document.getElementById('hodl-time').value);
+
+      if (isNaN(satsToLock) || satsToLock < 1 || satsToLock > satsAmount - lockedSats) {
+
+        showMessage('Invalid number of Satoshis to lock.');
+
+        return;
+
+      }
+
+      if (isNaN(hodlTime) || hodlTime < 1) {
+
+        showMessage('Please enter a valid HODL time.');
+
+        return;
+
+      }
+
+      hodlStartPrice = btcPrice;
+
+      lockedSats += satsToLock;
+
+      hodlEndTime = Date.now() + hodlTime * 60000;
+
+      updateBalance();
+
+      showMessage(`???? Locked ${satsToLock.toLocaleString()} Sats for ${hodlTime} minute(s). Good luck!`);
+
+      closeHodlModal();
+
+      startCountdown(hodlEndTime);
+
+      hodlTimer = setTimeout(() => {
+
+        const hodlEndPrice = btcPrice;
+
+        const profit = ((hodlEndPrice - hodlStartPrice) / hodlStartPrice) * 100;
+
+        lockedSats -= satsToLock;
+
+        updateBalance();
+
+        if (profit > 0) {
+
+          showMessage(`?? HODL complete! You made a ${profit.toFixed(2)}% profit!`);
+
+        } else {
+
+          showMessage(`?? HODL complete! You lost ${Math.abs(profit).toFixed(2)}%.`);
+
+        }
+
+      }, hodlTime * 60000);
+
+    }
+
+
+
+    // Start countdown timer
+
+    function startCountdown(endTime) {
+
+      const countdownElement = document.getElementById('countdown');
+
+      const interval = setInterval(() => {
+
+        const now = Date.now();
+
+        const remainingTime = endTime - now;
+
+        if (remainingTime <= 0) {
+
+          clearInterval(interval);
+
+          countdownElement.textContent = '';
+
+        } else {
+
+          const minutes = Math.floor(remainingTime / 60000);
+
+          const seconds = Math.floor((remainingTime % 60000) / 1000);
+
+          countdownElement.textContent = `Unlocks in: ${minutes}m ${seconds}s`;
+
+        }
+
+      }, 1000);
+
+    }
+
+
+
+    // Add transaction to history (newest at the top)
+
+    function addHistory(transaction) {
+
+      history.unshift(transaction);
+
+      const historyList = document.getElementById('history-list');
+
+      const li = document.createElement('li');
+
+      li.textContent = transaction;
+
+      historyList.insertBefore(li, historyList.firstChild);
+
+    }
+
+
+
+    // Update balance and BTC/Sats display
+
+    function updateBalance() {
+
+      document.getElementById('balance').textContent = balance.toFixed(2);
+
+      document.getElementById('btc-amount').textContent = (satsAmount / SATS_PER_BTC).toFixed(8);
+
+      document.getElementById('sats-balance').textContent = satsAmount.toLocaleString();
+
+      document.getElementById('locked-sats').textContent = lockedSats.toLocaleString();
+
+      updateProgress();
+
+    }
+
+
+
+    // Update progress bar
+
+    function updateProgress() {
+
+      const progress = (balance / GOAL) * 100;
+
+      document.getElementById('progress').style.width = `${Math.min(progress, 100)}%`;
+
+    }
+
+
+
+    // Check achievements
+
+    function checkAchievements() {
+
+      achievements.forEach(achievement => {
+
+        if (!achievement.unlocked && achievement.condition()) {
+
+          achievement.unlocked = true;
+
+          showMessage(`?? Achievement Unlocked: ${achievement.name}`);
+
+          const li = document.createElement('li');
+
+          li.textContent = achievement.name;
+
+          document.getElementById('achievements-list').appendChild(li);
+
+        }
+
+      });
+
+    }
+
+
+
+    // Show messages
+
+    function showMessage(msg) {
+
+      const messageElement = document.getElementById('message');
+
+      messageElement.textContent = msg;
+
+      setTimeout(() => {
+
+        messageElement.textContent = '';
+
+      }, 3000);
+
+    }
+
+
+
+    // On page load: track user, display custom text, and set initial balance
+
+    trackUser();
+
+    displayCustomText();
+
+    setInitialBalance();
+
+  </script>
+
+</body>
+
+</html>
