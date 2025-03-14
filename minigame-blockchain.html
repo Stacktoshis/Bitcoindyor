@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Blockchain Demo Game</title>
+
+  <style>
+
+    /* General and Mobile-Friendly Styles */
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+
+      background: linear-gradient(135deg, #1a1a1a, #333);
+
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+      color: #fff;
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      min-height: 100vh;
+
+    }
+
+    #ticker {
+
+      width: 100%;
+
+      overflow: hidden;
+
+      white-space: nowrap;
+
+      position: fixed;
+
+      top: 0;
+
+      background: #ffcc00;
+
+      color: #000;
+
+      font-size: 18px;
+
+      padding: 10px 0;
+
+      z-index: 1000;
+
+    }
+
+    #container {
+
+      margin-top: 70px; /* leave space for the ticker */
+
+      width: 90%;
+
+    }
+
+    /* Flex container to hold the game canvas (left) and the blockchain display (right) */
+
+    #gameAndBlockchain {
+
+      display: flex;
+
+      flex-wrap: wrap;
+
+      justify-content: space-between;
+
+    }
+
+    #gameContainer {
+
+      flex: 1 1 500px;
+
+      text-align: center;
+
+    }
+
+    canvas {
+
+      background: #222;
+
+      border: 2px solid #fff;
+
+      border-radius: 10px;
+
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+
+      margin-top: 20px;
+
+      width: 100%;
+
+      height: auto;
+
+    }
+
+    #controls {
+
+      margin-top: 15px;
+
+    }
+
+    button {
+
+      margin: 5px;
+
+      padding: 10px 20px;
+
+      font-size: 16px;
+
+      border: none;
+
+      cursor: pointer;
+
+      border-radius: 5px;
+
+      transition: background 0.3s, transform 0.3s;
+
+    }
+
+    #startBtn { background: #28a745; color: #fff; }
+
+    #pauseBtn { background: #ffc107; color: #fff; }
+
+    #restartBtn { background: #dc3545; color: #fff; }
+
+    button:hover { transform: scale(1.05); }
+
+    #timer { font-size: 20px; margin-top: 10px; }
+
+    #progressBarContainer {
+
+      width: 80%;
+
+      background: #444;
+
+      height: 20px;
+
+      margin: 15px auto;
+
+      border-radius: 5px;
+
+      overflow: hidden;
+
+    }
+
+    #progressBar {
+
+      height: 100%;
+
+      width: 0%;
+
+      background: #00ff00;
+
+      border-radius: 5px;
+
+      transition: width 0.3s;
+
+    }
+
+    #message {
+
+      font-size: 22px;
+
+      margin-top: 15px;
+
+      font-weight: bold;
+
+    }
+
+    #soundToggleContainer, #difficultyContainer {
+
+      margin: 10px;
+
+      font-size: 18px;
+
+      text-align: center;
+
+    }
+
+    /* Blockchain container on the right */
+
+    #blockchainContainer {
+
+      flex: 0 0 220px;
+
+      margin-left: 20px;
+
+      background: #222;
+
+      border: 2px solid #fff;
+
+      border-radius: 10px;
+
+      padding: 10px;
+
+      max-height: 500px;
+
+      overflow-y: auto;
+
+    }
+
+    #blockchainContainer h3 {
+
+      text-align: center;
+
+      margin-bottom: 10px;
+
+    }
+
+    /* Each block is drawn as a small box */
+
+    .block {
+
+      background: #444;
+
+      border: 1px solid #fff;
+
+      border-radius: 5px;
+
+      padding: 5px;
+
+      margin-bottom: 10px;
+
+      font-size: 12px;
+
+    }
+
+    #tooltip {
+
+      position: absolute;
+
+      background: rgba(0,0,0,0.8);
+
+      color: #fff;
+
+      padding: 5px 10px;
+
+      border-radius: 5px;
+
+      font-size: 14px;
+
+      pointer-events: none;
+
+      opacity: 0;
+
+      transition: opacity 0.3s;
+
+    }
+
+    @media (max-width: 768px) {
+
+      #gameAndBlockchain {
+
+        flex-direction: column;
+
+        align-items: center;
+
+      }
+
+      #blockchainContainer {
+
+        margin-left: 0;
+
+        margin-top: 20px;
+
+        width: 100%;
+
+        max-width: 400px;
+
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- Ticker with game instructions -->
+
+  <div id="ticker">
+
+    <marquee>
+
+      Click to add transactions. When 3 transactions are collected, a block is mined and added to the blockchain.
+
+      Blocks are immutable. Build a blockchain of 5 blocks within 60 seconds to win!
+
+    </marquee>
+
+  </div>
+
+
+
+  <div id="container">
+
+    <div id="difficultyContainer">
+
+      <label for="difficultySelect">Select Difficulty: </label>
+
+      <select id="difficultySelect">
+
+        <option value="easy">Easy</option>
+
+        <option value="medium" selected>Medium</option>
+
+        <option value="hard">Hard</option>
+
+      </select>
+
+    </div>
+
+    <div id="soundToggleContainer">
+
+      <label for="soundToggle">Sound: </label>
+
+      <input type="checkbox" id="soundToggle" checked>
+
+    </div>
+
+    <div id="gameAndBlockchain">
+
+      <div id="gameContainer">
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="controls">
+
+          <button id="startBtn">Start</button>
+
+          <button id="pauseBtn">Pause</button>
+
+          <button id="restartBtn">Restart</button>
+
+        </div>
+
+        <div id="timer">Time Left: <span id="timeLeft">60</span> sec</div>
+
+        <div id="progressBarContainer">
+
+          <div id="progressBar"></div>
+
+        </div>
+
+        <div id="message"></div>
+
+      </div>
+
+      <div id="blockchainContainer">
+
+        <h3>Blockchain</h3>
+
+        <div id="missedBlocksDisplay">Missed Blocks: 0</div>
+
+        <div id="blockchainScroll"></div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Audio Elements -->
+
+  <audio id="bgMusic" loop>
+
+    <source src="https://actions.google.com/sounds/v1/ambiences/office_background.ogg" type="audio/ogg">
+
+    Your browser does not support the audio element.
+
+  </audio>
+
+  <audio id="txSound">
+
+    <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
+
+  </audio>
+
+  <audio id="blockSound">
+
+    <source src="https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum.ogg" type="audio/ogg">
+
+  </audio>
+
+  <audio id="winSound">
+
+    <source src="https://actions.google.com/sounds/v1/cartoon/pop.ogg" type="audio/ogg">
+
+  </audio>
+
+  <audio id="loseSound">
+
+    <source src="https://actions.google.com/sounds/v1/cartoon/boing.ogg" type="audio/ogg">
+
+  </audio>
+
+
+
+  <div id="tooltip"></div>
+
+
+
+  <script>
+
+    // Global variables and settings
+
+    const canvas = document.getElementById("gameCanvas");
+
+    const ctx = canvas.getContext("2d");
+
+    const container = document.getElementById("gameContainer");
+
+    canvas.width = container.offsetWidth;
+
+    canvas.height = 450; // use this area for pending transactions
+
+    let gameActive = false;
+
+    let timeLeft = 60;
+
+    let timerInterval;
+
+    const txThreshold = 3;     // transactions needed per block
+
+    const targetBlocks = 5;    // blocks needed to win
+
+    let pendingTransactions = [];
+
+    let blockchain = [];
+
+    let missedBlocks = 0; // Track missed blocks
+
+    const progressBar = document.getElementById("progressBar");
+
+    const message = document.getElementById("message");
+
+    const timeLeftSpan = document.getElementById("timeLeft");
+
+    const soundToggle = document.getElementById("soundToggle");
+
+    let soundOn = soundToggle.checked;
+
+    
+
+    const difficultySelect = document.getElementById("difficultySelect");
+
+    let difficulty = "medium"; // Default difficulty
+
+    let miningArea = { x: 0, y: 0, width: canvas.width, height: canvas.height }; // Mining area for hard mode
+
+    let miningAreaMoveInterval; // Interval to move the mining area in hard mode
+
+
+
+    function updateDifficulty() {
+
+      difficulty = difficultySelect.value;
+
+      if (difficulty === "easy") {
+
+        // Easy: Click anywhere
+
+        miningArea = { x: 0, y: 0, width: canvas.width, height: canvas.height };
+
+        clearInterval(miningAreaMoveInterval);
+
+      } else if (difficulty === "medium") {
+
+        // Medium: Switch between top half and bottom half every 3 seconds
+
+        miningArea = { x: 0, y: 0, width: canvas.width, height: canvas.height / 2 };
+
+        clearInterval(miningAreaMoveInterval);
+
+        miningAreaMoveInterval = setInterval(() => {
+
+          miningArea.y = miningArea.y === 0 ? canvas.height / 2 : 0;
+
+        }, 3000);
+
+      } else if (difficulty === "hard") {
+
+        // Hard: Small, randomly moving area that moves every 1 second
+
+        miningArea = { x: Math.random() * (canvas.width - 100), y: Math.random() * (canvas.height - 100), width: 100, height: 100 };
+
+        clearInterval(miningAreaMoveInterval);
+
+        miningAreaMoveInterval = setInterval(() => {
+
+          miningArea.x = Math.random() * (canvas.width - 100);
+
+          miningArea.y = Math.random() * (canvas.height - 100);
+
+        }, 1000);
+
+      }
+
+    }
+
+    updateDifficulty();
+
+    difficultySelect.addEventListener("change", updateDifficulty);
+
+    
+
+    soundToggle.addEventListener("change", function() {
+
+      soundOn = this.checked;
+
+      if (!soundOn) {
+
+        bgMusic.pause();
+
+      } else if (gameActive) {
+
+        bgMusic.play();
+
+      }
+
+    });
+
+    
+
+    // Setup Audio Elements
+
+    const bgMusic = document.getElementById("bgMusic");
+
+    const txSound = document.getElementById("txSound");
+
+    const blockSound = document.getElementById("blockSound");
+
+    const winSound = document.getElementById("winSound");
+
+    const loseSound = document.getElementById("loseSound");
+
+    
+
+    // Tooltip function for feedback
+
+    const tooltip = document.getElementById("tooltip");
+
+    function showTooltip(text, x, y) {
+
+      tooltip.textContent = text;
+
+      tooltip.style.left = (x + canvas.offsetLeft + 25) + "px";
+
+      tooltip.style.top = (y + canvas.offsetTop - 10) + "px";
+
+      tooltip.style.opacity = 1;
+
+      setTimeout(() => { tooltip.style.opacity = 0; }, 1000);
+
+    }
+
+    
+
+    // Transaction class – each click adds a transaction
+
+    class Transaction {
+
+      constructor(x, y, id) {
+
+        this.x = x;
+
+        this.y = y;
+
+        this.id = id;
+
+      }
+
+      draw() {
+
+        ctx.beginPath();
+
+        ctx.arc(this.x, this.y, 10, 0, Math.PI * 2);
+
+        ctx.fillStyle = "#FFA500"; // Orange color
+
+        ctx.fill();
+
+        ctx.strokeStyle = "#000";
+
+        ctx.lineWidth = 2;
+
+        ctx.stroke();
+
+        // Draw Bitcoin symbol (?) inside the circle
+
+        ctx.font = "16px Arial";
+
+        ctx.fillStyle = "#000";
+
+        ctx.textAlign = "center";
+
+        ctx.textBaseline = "middle";
+
+        ctx.fillText("?", this.x, this.y);
+
+      }
+
+    }
+
+    
+
+    // Block class – once mined, blocks are immutable.
+
+    class Block {
+
+      constructor(blockNumber, transactions) {
+
+        this.blockNumber = blockNumber;
+
+        this.transactions = transactions; // array of transaction IDs
+
+        this.timestamp = new Date().toLocaleTimeString();
+
+      }
+
+    }
+
+    
+
+    // Global counter for transaction IDs
+
+    let txCounter = 1;
+
+    
+
+    // Add transaction on canvas click (only in the mining area)
+
+    canvas.addEventListener("click", function(e) {
+
+      if (!gameActive) return;
+
+      let rect = canvas.getBoundingClientRect();
+
+      let x = e.clientX - rect.left;
+
+      let y = e.clientY - rect.top;
+
+      // Check if the click is within the mining area
+
+      if (
+
+        x < miningArea.x || x > miningArea.x + miningArea.width ||
+
+        y < miningArea.y || y > miningArea.y + miningArea.height
+
+      ) {
+
+        endGame(); // Lose if clicked outside the mining area
+
+        return;
+
+      }
+
+      let tx = new Transaction(x, y, txCounter++);
+
+      pendingTransactions.push(tx);
+
+      if (soundOn) {
+
+        txSound.currentTime = 0;
+
+        txSound.play();
+
+      }
+
+      // Automatically mine a block when threshold is reached
+
+      if (pendingTransactions.length >= txThreshold) {
+
+        mineBlock();
+
+      }
+
+    });
+
+    
+
+    // Mine a block: bundle pending transactions, add to blockchain, update the blockchain display.
+
+    function mineBlock() {
+
+      let txIds = pendingTransactions.map(tx => tx.id);
+
+      let block = new Block(blockchain.length + 1, txIds);
+
+      blockchain.push(block);
+
+      pendingTransactions = [];
+
+      updateBlockchainDisplay();
+
+      updateProgress();
+
+      if (soundOn) {
+
+        blockSound.currentTime = 0;
+
+        blockSound.play();
+
+      }
+
+    }
+
+    
+
+    // Update the blockchain display in the scrollable container on the right.
+
+    function updateBlockchainDisplay() {
+
+      const blockchainScroll = document.getElementById("blockchainScroll");
+
+      blockchainScroll.innerHTML = ""; // clear existing blocks
+
+      // Display blocks in reverse order (latest on top)
+
+      for (let i = blockchain.length - 1; i >= 0; i--) {
+
+        const block = blockchain[i];
+
+        let blockDiv = document.createElement("div");
+
+        blockDiv.className = "block";
+
+        blockDiv.innerHTML = `<strong>Block #${block.blockNumber}</strong><br>
+
+                              TXs: ${block.transactions.join(", ")}<br>
+
+                              ${block.timestamp}`;
+
+        blockchainScroll.appendChild(blockDiv);
+
+      }
+
+      // Update missed blocks counter
+
+      document.getElementById("missedBlocksDisplay").innerText = "Missed Blocks: " + missedBlocks;
+
+    }
+
+    
+
+    // Update progress bar based on number of blocks mined.
+
+    function updateProgress() {
+
+      let percentage = Math.min((blockchain.length / targetBlocks) * 100, 100);
+
+      progressBar.style.width = percentage + "%";
+
+    }
+
+    
+
+    // Draw the current state: pending transactions and mining area.
+
+    function draw() {
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#fff";
+
+      ctx.font = "16px Arial";
+
+      ctx.fillText("Pending Transactions", 10, 30);
+
+      pendingTransactions.forEach(tx => tx.draw());
+
+      // Draw mining area for medium and hard modes
+
+      if (difficulty !== "easy") {
+
+        ctx.strokeStyle = "#ff0000";
+
+        ctx.lineWidth = 2;
+
+        ctx.strokeRect(miningArea.x, miningArea.y, miningArea.width, miningArea.height);
+
+      }
+
+    }
+
+    
+
+    // Animation loop
+
+    function animate() {
+
+      if (!gameActive) return;
+
+      draw();
+
+      requestAnimationFrame(animate);
+
+    }
+
+    
+
+    // Game control functions
+
+    function startGame() {
+
+      if (gameActive) return;
+
+      gameActive = true;
+
+      message.textContent = "";
+
+      txCounter = 1;
+
+      pendingTransactions = [];
+
+      blockchain = [];
+
+      missedBlocks = 0;
+
+      updateBlockchainDisplay();
+
+      timeLeft = 60;
+
+      timeLeftSpan.textContent = timeLeft;
+
+      updateProgress();
+
+      animate();
+
+      timerInterval = setInterval(() => {
+
+        timeLeft--;
+
+        timeLeftSpan.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+
+          endGame();
+
+        }
+
+      }, 1000);
+
+      if (soundOn) {
+
+        bgMusic.currentTime = 0;
+
+        bgMusic.play();
+
+      }
+
+    }
+
+    
+
+    function pauseGame() {
+
+      gameActive = false;
+
+      clearInterval(timerInterval);
+
+      bgMusic.pause();
+
+    }
+
+    
+
+    function restartGame() {
+
+      gameActive = false;
+
+      clearInterval(timerInterval);
+
+      timeLeft = 60;
+
+      timeLeftSpan.textContent = timeLeft;
+
+      pendingTransactions = [];
+
+      blockchain = [];
+
+      missedBlocks = 0;
+
+      updateBlockchainDisplay();
+
+      updateProgress();
+
+      message.textContent = "";
+
+      draw();
+
+      bgMusic.pause();
+
+      bgMusic.currentTime = 0;
+
+    }
+
+    
+
+    function endGame() {
+
+      clearInterval(timerInterval);
+
+      gameActive = false;
+
+      if (blockchain.length >= targetBlocks) {
+
+        message.textContent = `?? You Win! Blockchain length: ${blockchain.length} blocks.`;
+
+        message.style.color = "limegreen";
+
+        if (soundOn) winSound.play();
+
+      } else {
+
+        message.textContent = `? You Lose! Blockchain length: ${blockchain.length} blocks.`;
+
+        message.style.color = "red";
+
+        if (soundOn) loseSound.play();
+
+      }
+
+      bgMusic.pause();
+
+    }
+
+    
+
+    // Hook up button events
+
+    document.getElementById("startBtn").addEventListener("click", startGame);
+
+    document.getElementById("pauseBtn").addEventListener("click", pauseGame);
+
+    document.getElementById("restartBtn").addEventListener("click", restartGame);
+
+  </script>
+
+</body>
+
+</html>
