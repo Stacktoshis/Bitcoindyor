@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Bitcoin Adventure: Learn Attributes & Saylor's Rules</title>
+
+  <style>
+
+    /* General styles for the main program */
+
+    * {
+
+      margin: 0;
+
+      padding: 0;
+
+      box-sizing: border-box;
+
+    }
+
+    body {
+
+      font-family: 'Arial', sans-serif;
+
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+
+      color: #fff;
+
+      margin: 0;
+
+      padding: 20px;
+
+      display: flex;
+
+      justify-content: center;
+
+      align-items: center;
+
+      min-height: 100vh;
+
+      flex-direction: column;
+
+    }
+
+    .container {
+
+      background: rgba(255, 255, 255, 0.1);
+
+      padding: 20px;
+
+      border-radius: 15px;
+
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+      backdrop-filter: blur(10px);
+
+      width: 100%;
+
+      max-width: 500px;
+
+      text-align: center;
+
+      animation: fadeIn 1s ease-in-out;
+
+      position: relative;
+
+    }
+
+    h1 {
+
+      color: #f7931a;
+
+      margin-bottom: 20px;
+
+      font-size: 2rem;
+
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+
+    }
+
+    p {
+
+      font-size: 1rem;
+
+      line-height: 1.6;
+
+      margin-bottom: 20px;
+
+      color: #e0e0e0;
+
+    }
+
+    .playlist {
+
+      display: grid;
+
+      grid-template-columns: 1fr;
+
+      gap: 10px;
+
+      margin-top: 20px;
+
+    }
+
+    .playlist button {
+
+      background: linear-gradient(135deg, #f7931a, #e07b0e);
+
+      color: #fff;
+
+      border: none;
+
+      padding: 15px;
+
+      border-radius: 10px;
+
+      cursor: pointer;
+
+      font-size: 1rem;
+
+      transition: transform 0.3s, box-shadow 0.3s;
+
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+
+    }
+
+    .playlist button:hover {
+
+      transform: translateY(-5px);
+
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+
+    }
+
+    .hidden {
+
+      display: none;
+
+    }
+
+    .attribute {
+
+      font-weight: bold;
+
+      color: #f7931a;
+
+    }
+
+    .back-button {
+
+      margin-top: 20px;
+
+      background: linear-gradient(135deg, #f7931a, #e07b0e);
+
+      color: #fff;
+
+      border: none;
+
+      padding: 10px 20px;
+
+      border-radius: 5px;
+
+      cursor: pointer;
+
+      font-size: 1rem;
+
+      transition: transform 0.3s, box-shadow 0.3s;
+
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+
+    }
+
+    .back-button:hover {
+
+      transform: translateY(-3px);
+
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+
+    }
+
+    .resources-button {
+
+      margin-top: 10px;
+
+      background: linear-gradient(135deg, #4caf50, #45a049);
+
+      color: #fff;
+
+      border: none;
+
+      padding: 10px 20px;
+
+      border-radius: 5px;
+
+      cursor: pointer;
+
+      font-size: 1rem;
+
+      transition: transform 0.3s, box-shadow 0.3s;
+
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+
+    }
+
+    .resources-button:hover {
+
+      transform: translateY(-3px);
+
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+
+    }
+
+    .achievements-button {
+
+      margin-top: 10px;
+
+      background: linear-gradient(135deg, #ff6f61, #ff3b2f);
+
+      color: #fff;
+
+      border: none;
+
+      padding: 10px 20px;
+
+      border-radius: 5px;
+
+      cursor: pointer;
+
+      font-size: 1rem;
+
+      transition: transform 0.3s, box-shadow 0.3s;
+
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+
+    }
+
+    .achievements-button:hover {
+
+      transform: translateY(-3px);
+
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+
+    }
+
+    @keyframes fadeIn {
+
+      from { opacity: 0; transform: translateY(20px); }
+
+      to { opacity: 1; transform: translateY(0); }
+
+    }
+
+    @media (min-width: 600px) {
+
+      .playlist {
+
+        grid-template-columns: repeat(2, 1fr);
+
+      }
+
+    }
+
+    /* Full-screen mini game container styling */
+
+    .minigame-container {
+
+      position: fixed;
+
+      top: 0;
+
+      left: 0;
+
+      width: 100vw;
+
+      height: 100vh;
+
+      background: #000;
+
+      z-index: 1000;
+
+      overflow: hidden;
+
+    }
+
+    .minigame-container iframe {
+
+      width: 100%;
+
+      height: 100%;
+
+      border: none;
+
+      border-radius: 0;
+
+    }
+
+    /* Back button positioned within the mini game */
+
+    .minigame-container .back-button {
+
+      position: absolute;
+
+      top: 10px;
+
+      left: 10px;
+
+      z-index: 1001;
+
+    }
+
+    /* Achievement styling */
+
+    .completed {
+
+      text-decoration: line-through;
+
+      color: #4caf50;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- Introduction -->
+
+    <div id="intro">
+
+      <h1>🚀 Welcome to Bitcoin Adventure!</h1>
+
+      <p>Explore the <span class="attribute">20 key attributes of Bitcoin</span> and <span class="attribute">Michael Saylor's 21 Rules of Bitcoin</span> through interactive scenarios. Choose a topic from the playlist below to start learning!</p>
+
+      <div class="playlist">
+
+        <button data-action="showAttributes"><span class="emoji">🔑</span>Explore Bitcoin Attributes</button>
+
+        <button data-action="showRules"><span class="emoji">📜</span>Explore Saylor's Rules</button>
+
+        <button data-action="openMiniGame" data-minigame="hodlSimulator"><span class="emoji">💰</span>The Bitcoin HODL Simulator</button>
+
+      </div>
+
+      <button class="resources-button" data-action="showResources"><span class="emoji">🛠️</span>Recommended Tools & Resources</button>
+
+      <button class="achievements-button" data-action="showAchievements"><span class="emoji">🏆</span>View Achievements</button>
+
+    </div>
+
+
+
+    <!-- Bitcoin Attributes Playlist -->
+
+    <div id="attributes-playlist" class="hidden">
+
+      <h1>🔑 Bitcoin Attributes</h1>
+
+      <p>Choose an attribute to learn more:</p>
+
+      <div class="playlist">
+
+        <button data-action="chooseAttribute" data-attribute="decentralization"><span class="emoji">🌐</span>1. Decentralization</button>
+
+        <button data-action="chooseAttribute" data-attribute="blockchain"><span class="emoji">⛓️</span>2. Blockchain Technology</button>
+
+        <button data-action="chooseAttribute" data-attribute="limitedSupply"><span class="emoji">💰</span>3. Limited Supply</button>
+
+        <button data-action="chooseAttribute" data-attribute="pseudonymity"><span class="emoji">🕵️</span>4. Pseudonymity</button>
+
+        <button data-action="chooseAttribute" data-attribute="security"><span class="emoji">🔒</span>5. Security</button>
+
+        <button data-action="chooseAttribute" data-attribute="transparency"><span class="emoji">👁️</span>6. Transparency</button>
+
+        <button data-action="chooseAttribute" data-attribute="immutability"><span class="emoji">🛡️</span>7. Immutability</button>
+
+        <button data-action="chooseAttribute" data-attribute="peerToPeer"><span class="emoji">🤝</span>8. Peer-to-Peer Transactions</button>
+
+        <button data-action="chooseAttribute" data-attribute="divisibility"><span class="emoji">➗</span>9. Divisibility</button>
+
+        <button data-action="chooseAttribute" data-attribute="globalAccess"><span class="emoji">🌍</span>10. Global Accessibility</button>
+
+        <button data-action="chooseAttribute" data-attribute="censorshipResistance"><span class="emoji">🚫</span>11. Censorship Resistance</button>
+
+        <button data-action="chooseAttribute" data-attribute="programmability"><span class="emoji">🧩</span>12. Programmability</button>
+
+        <button data-action="chooseAttribute" data-attribute="volatility"><span class="emoji">📈</span>13. Volatility</button>
+
+        <button data-action="chooseAttribute" data-attribute="storeOfValue"><span class="emoji">🏦</span>14. Store of Value</button>
+
+        <button data-action="chooseAttribute" data-attribute="energyConsumption"><span class="emoji">⚡</span>15. Energy Consumption</button>
+
+        <button data-action="chooseAttribute" data-attribute="permissionless"><span class="emoji">🚪</span>16. Permissionless</button>
+
+        <button data-action="chooseAttribute" data-attribute="irreversibleTransactions"><span class="emoji">⏳</span>17. Irreversible Transactions</button>
+
+        <button data-action="chooseAttribute" data-attribute="portability"><span class="emoji">📱</span>18. Portability</button>
+
+        <button data-action="chooseAttribute" data-attribute="trustlessSystem"><span class="emoji">🤖</span>19. Trustless System</button>
+
+        <button data-action="chooseAttribute" data-attribute="innovation"><span class="emoji">🚀</span>20. Innovation and Ecosystem</button>
+
+      </div>
+
+      <button class="back-button" data-action="backToIntro"><span class="emoji">🔙</span>Back to Main Menu</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Decentralization -->
+
+    <div id="scenario-decentralization" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🌐 Decentralization</h1>
+
+      <p>Bitcoin is <span class="attribute">decentralized</span>, meaning no single entity controls it. Imagine a world where no government or bank can manipulate your money. What do you do?</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="decentralization"><span class="emoji">🎮</span>Play mini game about: Decentralization</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Blockchain Technology -->
+
+    <div id="scenario-blockchain" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>⛓️ Blockchain Technology</h1>
+
+      <p>Bitcoin uses <span class="attribute">blockchain technology</span> to record transactions securely and transparently.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="blockchain"><span class="emoji">🎮</span>Play mini game about: Blockchain</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Limited Supply -->
+
+    <div id="scenario-limitedSupply" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>💰 Limited Supply</h1>
+
+      <p>Bitcoin has a <span class="attribute">fixed supply of 21 million coins</span>, making it a scarce and deflationary asset.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="limitedSupply"><span class="emoji">🎮</span>Play mini game about: Limited Supply</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Pseudonymity -->
+
+    <div id="scenario-pseudonymity" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🕵️ Pseudonymity</h1>
+
+      <p>Bitcoin transactions are <span class="attribute">pseudonymous</span>, meaning they are not directly tied to real-world identities.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="pseudonymity"><span class="emoji">🎮</span>Play mini game about: Pseudonymity</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Security -->
+
+    <div id="scenario-security" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🔒 Security</h1>
+
+      <p>Bitcoin's network is secured by <span class="attribute">cryptographic algorithms</span> and the proof-of-work consensus mechanism.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="security"><span class="emoji">🎮</span>Play mini game about: Security</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Transparency -->
+
+    <div id="scenario-transparency" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>👁️ Transparency</h1>
+
+      <p>All Bitcoin transactions are recorded on a <span class="attribute">public ledger</span>, ensuring full transparency.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="transparency"><span class="emoji">🎮</span>Play mini game about: Transparency</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Immutability -->
+
+    <div id="scenario-immutability" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🛡️ Immutability</h1>
+
+      <p>Once confirmed, Bitcoin transactions are <span class="attribute">immutable</span>, meaning they cannot be altered or reversed.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="immutability"><span class="emoji">🎮</span>Play mini game about: Immutability</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Peer-to-Peer Transactions -->
+
+    <div id="scenario-peerToPeer" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🤝 Peer-to-Peer Transactions</h1>
+
+      <p>Bitcoin enables <span class="attribute">direct transactions</span> between users without the need for intermediaries.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="peerToPeer"><span class="emoji">🎮</span>Play mini game about: Peer-to-Peer Transactions</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Divisibility -->
+
+    <div id="scenario-divisibility" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>➗ Divisibility</h1>
+
+      <p>Bitcoin can be divided into <span class="attribute">100 million smaller units</span>, called satoshis, making it highly divisible.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="divisibility"><span class="emoji">🎮</span>Play mini game about: Divisibility</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Global Accessibility -->
+
+    <div id="scenario-globalAccess" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🌍 Global Accessibility</h1>
+
+      <p>Bitcoin is <span class="attribute">accessible to anyone</span> with an internet connection, regardless of location.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="globalAccess"><span class="emoji">🎮</span>Play mini game about: Global Accessibility</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Censorship Resistance -->
+
+    <div id="scenario-censorshipResistance" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🚫 Censorship Resistance</h1>
+
+      <p>Bitcoin transactions are <span class="attribute">censorship-resistant</span>, meaning no authority can block or reverse them.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="censorshipResistance"><span class="emoji">🎮</span>Play mini game about: Censorship Resistance</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Programmability -->
+
+    <div id="scenario-programmability" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🧩 Programmability</h1>
+
+      <p>Bitcoin's <span class="attribute">scripting language</span> allows for programmable money and smart contracts.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="programmability"><span class="emoji">🎮</span>Play mini game about: Programmability</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Volatility -->
+
+    <div id="scenario-volatility" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>📈 Volatility</h1>
+
+      <p>Bitcoin's price is known for its <span class="attribute">volatility</span>, with significant price swings in short periods.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="volatility"><span class="emoji">🎮</span>Play mini game about: Volatility</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Store of Value -->
+
+    <div id="scenario-storeOfValue" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🏦 Store of Value</h1>
+
+      <p>Bitcoin is often compared to <span class="attribute">digital gold</span> due to its ability to store value over time.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="storeOfValue"><span class="emoji">🎮</span>Play mini game about: Store of Value</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Energy Consumption -->
+
+    <div id="scenario-energyConsumption" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>⚡ Energy Consumption</h1>
+
+      <p>Bitcoin mining consumes significant <span class="attribute">energy</span> to secure the network and validate transactions.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="energyConsumption"><span class="emoji">🎮</span>Play mini game about: Energy Consumption</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Permissionless -->
+
+    <div id="scenario-permissionless" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🚪 Permissionless</h1>
+
+      <p>Bitcoin is <span class="attribute">permissionless</span>, meaning anyone can participate without needing approval.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="permissionless"><span class="emoji">🎮</span>Play mini game about: Permissionless</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Irreversible Transactions -->
+
+    <div id="scenario-irreversibleTransactions" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>⏳ Irreversible Transactions</h1>
+
+      <p>Bitcoin transactions are <span class="attribute">irreversible</span>, ensuring finality and reducing fraud.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="irreversibleTransactions"><span class="emoji">🎮</span>Play mini game about: Irreversible Transactions</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Portability -->
+
+    <div id="scenario-portability" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>📱 Portability</h1>
+
+      <p>Bitcoin is highly <span class="attribute">portable</span>, allowing users to carry their wealth anywhere in the world.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="portability"><span class="emoji">🎮</span>Play mini game about: Portability</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Trustless System -->
+
+    <div id="scenario-trustlessSystem" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🤖 Trustless System</h1>
+
+      <p>Bitcoin operates as a <span class="attribute">trustless system</span>, eliminating the need for trust in a central authority.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="trustlessSystem"><span class="emoji">🎮</span>Play mini game about: Trustless System</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Innovation and Ecosystem -->
+
+    <div id="scenario-innovation" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🚀 Innovation and Ecosystem</h1>
+
+      <p>Bitcoin has inspired a <span class="attribute">global ecosystem</span> of financial innovation and decentralized applications.</p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="innovation"><span class="emoji">🎮</span>Play mini game about: Innovation and Ecosystem</button>
+
+    </div>
+
+
+
+    <!-- Saylor's Rules Playlist -->
+
+    <div id="rules-playlist" class="hidden">
+
+      <h1>📜 Michael Saylor's 21 Rules of Bitcoin</h1>
+
+      <p>Choose a rule to learn more:</p>
+
+      <div class="playlist">
+
+        <button data-action="chooseRule" data-rule="rule1"><span class="emoji">🧠</span>Rule 1: Understand Bitcoin</button>
+
+        <button data-action="chooseRule" data-rule="rule2"><span class="emoji">🔄</span>Rule 2: Everyone is Against Bitcoin First</button>
+
+        <button data-action="chooseRule" data-rule="rule3"><span class="emoji">📚</span>Rule 3: Never Stop Learning</button>
+
+        <button data-action="chooseRule" data-rule="rule4"><span class="emoji">🌀</span>Rule 4: Bitcoin is Powered by Chaos</button>
+
+        <button data-action="chooseRule" data-rule="rule5"><span class="emoji">🎰</span>Rule 5: Everyone Can Win</button>
+
+        <button data-action="chooseRule" data-rule="rule6"><span class="emoji">🛡️</span>Rule 6: Wear the Armor</button>
+
+        <button data-action="chooseRule" data-rule="rule7"><span class="emoji">🏠</span>Rule 7: True Ownership</button>
+
+        <button data-action="chooseRule" data-rule="rule8"><span class="emoji">💸</span>Rule 8: Price You Deserve</button>
+
+        <button data-action="chooseRule" data-rule="rule9"><span class="emoji">🎲</span>Rule 9: Only Invest What You Can Lose</button>
+
+        <button data-action="chooseRule" data-rule="rule10"><span class="emoji">🔓</span>Rule 10: Escape the Matrix</button>
+
+        <button data-action="chooseRule" data-rule="rule11"><span class="emoji">👀</span>Rule 11: Need to Know</button>
+
+        <button data-action="chooseRule" data-rule="rule12"><span class="emoji">🔥</span>Rule 12: Destroy Old Models</button>
+
+        <button data-action="chooseRule" data-rule="rule13"><span class="emoji">💊</span>Rule 13: Cure to Economic Ill</button>
+
+        <button data-action="chooseRule" data-rule="rule14"><span class="emoji">❤️</span>Rule 14: Be For Bitcoin</button>
+
+        <button data-action="chooseRule" data-rule="rule15"><span class="emoji">🌍</span>Rule 15: Bitcoin is for Everyone</button>
+
+        <button data-action="chooseRule" data-rule="rule16"><span class="emoji">💡</span>Rule 16: Think in Bitcoin</button>
+
+        <button data-action="chooseRule" data-rule="rule17"><span class="emoji">🔄</span>Rule 17: Bitcoin Changes You</button>
+
+        <button data-action="chooseRule" data-rule="rule18"><span class="emoji">👁️</span>Rule 18: Laser Eyes</button>
+
+        <button data-action="chooseRule" data-rule="rule19"><span class="emoji">🙏</span>Rule 19: Respect Bitcoin</button>
+
+        <button data-action="chooseRule" data-rule="rule20"><span class="emoji">💎</span>Rule 20: Never Sell</button>
+
+        <button data-action="chooseRule" data-rule="rule21"><span class="emoji">❤️</span>Rule 21: Spread Bitcoin with Love</button>
+
+      </div>
+
+      <button class="back-button" data-action="backToIntro"><span class="emoji">🔙</span>Back to Main Menu</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 1 -->
+
+    <div id="scenario-rule1" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🧠 Rule 1: Understand Bitcoin</h1>
+
+      <p>Michael Saylor says: <em>"Those who understand Bitcoin buy Bitcoin. Those who don't, criticize Bitcoin."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule1"><span class="emoji">🎮</span>Play mini game about: Rule 1</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 2 -->
+
+    <div id="scenario-rule2" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🔄 Rule 2: Everyone is Against Bitcoin First</h1>
+
+      <p>Michael Saylor says: <em>"Everyone is against Bitcoin at first, but once they understand it, they become advocates."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule2"><span class="emoji">🎮</span>Play mini game about: Rule 2</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 3 -->
+
+    <div id="scenario-rule3" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>📚 Rule 3: Never Stop Learning</h1>
+
+      <p>Michael Saylor says: <em>"Never stop learning about Bitcoin. The more you know, the more you realize its potential."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule3"><span class="emoji">🎮</span>Play mini game about: Rule 3</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 4 -->
+
+    <div id="scenario-rule4" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🌀 Rule 4: Bitcoin is Powered by Chaos</h1>
+
+      <p>Michael Saylor says: <em>"Bitcoin thrives in chaos. It is the ultimate hedge against uncertainty."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule4"><span class="emoji">🎮</span>Play mini game about: Rule 4</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 5 -->
+
+    <div id="scenario-rule5" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🎰 Rule 5: Everyone Can Win</h1>
+
+      <p>Michael Saylor says: <em>"Bitcoin is not a zero-sum game. Everyone can win by adopting it."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule5"><span class="emoji">🎮</span>Play mini game about: Rule 5</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 6 -->
+
+    <div id="scenario-rule6" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🛡️ Rule 6: Wear the Armor</h1>
+
+      <p>Michael Saylor says: <em>"Wear the armor of Bitcoin to protect yourself from financial chaos."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule6"><span class="emoji">🎮</span>Play mini game about: Rule 6</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 7 -->
+
+    <div id="scenario-rule7" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🏠 Rule 7: True Ownership</h1>
+
+      <p>Michael Saylor says: <em>"Bitcoin gives you true ownership of your wealth, free from intermediaries."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule7"><span class="emoji">🎮</span>Play mini game about: Rule 7</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 8 -->
+
+    <div id="scenario-rule8" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>💸 Rule 8: Price You Deserve</h1>
+
+      <p>Michael Saylor says: <em>"The price of Bitcoin is the price you deserve. If you don't hold it, you pay the price."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule8"><span class="emoji">🎮</span>Play mini game about: Rule 8</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 9 -->
+
+    <div id="scenario-rule9" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🎲 Rule 9: Only Invest What You Can Lose</h1>
+
+      <p>Michael Saylor says: <em>"Only invest in Bitcoin what you can afford to lose, but don't miss the opportunity."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule9"><span class="emoji">🎮</span>Play mini game about: Rule 9</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 10 -->
+
+    <div id="scenario-rule10" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🔓 Rule 10: Escape the Matrix</h1>
+
+      <p>Michael Saylor says: <em>"Bitcoin is your escape from the fiat money matrix."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule10"><span class="emoji">🎮</span>Play mini game about: Rule 10</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 11 -->
+
+    <div id="scenario-rule11" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>👀 Rule 11: Need to Know</h1>
+
+      <p>Michael Saylor says: <em>"You don't need to know everything about Bitcoin to benefit from it."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule11"><span class="emoji">🎮</span>Play mini game about: Rule 11</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 12 -->
+
+    <div id="scenario-rule12" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🔥 Rule 12: Destroy Old Models</h1>
+
+      <p>Michael Saylor says: <em>"Bitcoin destroys old financial models and replaces them with something better."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule12"><span class="emoji">🎮</span>Play mini game about: Rule 12</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 13 -->
+
+    <div id="scenario-rule13" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>💊 Rule 13: Cure to Economic Ill</h1>
+
+      <p>Michael Saylor says: <em>"Bitcoin is the cure to the economic ills caused by fiat money."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule13"><span class="emoji">🎮</span>Play mini game about: Rule 13</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 14 -->
+
+    <div id="scenario-rule14" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>❤️ Rule 14: Be For Bitcoin</h1>
+
+      <p>Michael Saylor says: <em>"Be for Bitcoin, not against it. It is the future of money."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule14"><span class="emoji">🎮</span>Play mini game about: Rule 14</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 15 -->
+
+    <div id="scenario-rule15" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🌍 Rule 15: Bitcoin is for Everyone</h1>
+
+      <p>Michael Saylor says: <em>"Bitcoin is for everyone, regardless of where you live or your financial status."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule15"><span class="emoji">🎮</span>Play mini game about: Rule 15</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 16 -->
+
+    <div id="scenario-rule16" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>💡 Rule 16: Think in Bitcoin</h1>
+
+      <p>Michael Saylor says: <em>"Think in Bitcoin, not fiat. It is the ultimate store of value."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule16"><span class="emoji">🎮</span>Play mini game about: Rule 16</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 17 -->
+
+    <div id="scenario-rule17" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🔄 Rule 17: Bitcoin Changes You</h1>
+
+      <p>Michael Saylor says: <em>"Bitcoin changes you. It makes you think differently about money and value."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule17"><span class="emoji">🎮</span>Play mini game about: Rule 17</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 18 -->
+
+    <div id="scenario-rule18" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>👁️ Rule 18: Laser Eyes</h1>
+
+      <p>Michael Saylor says: <em>"Laser eyes represent the focus and determination of Bitcoin believers."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule18"><span class="emoji">🎮</span>Play mini game about: Rule 18</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 19 -->
+
+    <div id="scenario-rule19" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>🙏 Rule 19: Respect Bitcoin</h1>
+
+      <p>Michael Saylor says: <em>"Respect Bitcoin. It is the hardest money ever created."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule19"><span class="emoji">🎮</span>Play mini game about: Rule 19</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 20 -->
+
+    <div id="scenario-rule20" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>💎 Rule 20: Never Sell</h1>
+
+      <p>Michael Saylor says: <em>"Never sell your Bitcoin. It is the best long-term investment."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule20"><span class="emoji">🎮</span>Play mini game about: Rule 20</button>
+
+    </div>
+
+
+
+    <!-- Scenario: Rule 21 -->
+
+    <div id="scenario-rule21" class="hidden">
+
+      <button class="back-button" data-action="backToPlaylist"><span class="emoji">🔙</span>Back to Playlist</button>
+
+      <h1>❤️ Rule 21: Spread Bitcoin with Love</h1>
+
+      <p>Michael Saylor says: <em>"Spread Bitcoin with love. It is a gift to humanity."</em></p>
+
+      <button class="resources-button" data-action="openMiniGame" data-minigame="rule21"><span class="emoji">🎮</span>Play mini game about: Rule 21</button>
+
+    </div>
+
+
+
+    <!-- Full-Screen Mini Game Section for Decentralization -->
+
+    <div id="minigame-decentralization" class="minigame-container hidden">
+
+      <iframe src="minigame-decentralization.html" scrolling="no"></iframe>
+
+      <button class="back-button" data-action="closeMiniGame"><span class="emoji">🔙</span>Back to Decentralization</button>
+
+    </div>
+
+
+
+    <!-- Full-Screen Mini Game Section for HODL Simulator -->
+
+    <div id="minigame-hodlSimulator" class="minigame-container hidden">
+
+      <iframe src="minigame-hodlSimulator.html" scrolling="no"></iframe>
+
+      <button class="back-button" data-action="closeMiniGame"><span class="emoji">🔙</span>Back to Home</button>
+
+    </div>
+
+
+
+    <!-- Resources Modal -->
+
+    <div id="resources-modal" class="hidden">
+
+      <h1>🛠️ Recommended Tools & Resources</h1>
+
+      <p>Here are some tools and resources to help you on your Bitcoin journey:</p>
+
+      <ul>
+
+        <li><a href="https://bitcoin.org" target="_blank">Bitcoin.org</a> - Official Bitcoin website</li>
+
+        <li><a href="https://michael-saylor.com" target="_blank">Michael Saylor's Website</a> - Learn more from Michael Saylor</li>
+
+        <li><a href="https://coinbase.com" target="_blank">Coinbase</a> - Buy and sell Bitcoin</li>
+
+        <li><a href="https://ledger.com" target="_blank">Ledger</a> - Secure your Bitcoin with a hardware wallet</li>
+
+        <li><a href="https://binance.com" target="_blank">Binance</a> - Trade Bitcoin and other cryptocurrencies</li>
+
+      </ul>
+
+      <button class="back-button" data-action="hideResources"><span class="emoji">🔙</span>Close</button>
+
+    </div>
+
+
+
+    <!-- Achievements Modal -->
+
+    <div id="achievements-modal" class="hidden">
+
+      <h1>🏆 Achievements</h1>
+
+      <p>Track your progress and unlock achievements as you learn about Bitcoin!</p>
+
+      <ul>
+
+        <li id="achievement-decentralization">🌐 Learn About Decentralization</li>
+
+        <li id="achievement-rule1">🧠 Understand Bitcoin (Rule 1)</li>
+
+      </ul>
+
+      <button class="back-button" data-action="hideAchievements"><span class="emoji">🔙</span>Close</button>
+
+    </div>
+
+  </div>
+
+
+
+  <script>
+
+    // Encapsulate app state
+
+    const appState = {
+
+      achievements: {
+
+        decentralization: false,
+
+        rule1: false,
+
+      },
+
+    };
+
+
+
+    // Event delegation for button clicks
+
+    document.addEventListener('click', (event) => {
+
+      const action = event.target.getAttribute('data-action');
+
+      const attribute = event.target.getAttribute('data-attribute');
+
+      const rule = event.target.getAttribute('data-rule');
+
+      const minigame = event.target.getAttribute('data-minigame');
+
+
+
+      if (action) {
+
+        switch (action) {
+
+          case 'showAttributes':
+
+            showAttributes();
+
+            break;
+
+          case 'showRules':
+
+            showRules();
+
+            break;
+
+          case 'chooseAttribute':
+
+            chooseAttribute(attribute);
+
+            break;
+
+          case 'chooseRule':
+
+            chooseRule(rule);
+
+            break;
+
+          case 'backToIntro':
+
+            backToIntro();
+
+            break;
+
+          case 'backToPlaylist':
+
+            backToPlaylist();
+
+            break;
+
+          case 'openMiniGame':
+
+            openMiniGame(minigame);
+
+            break;
+
+          case 'closeMiniGame':
+
+            closeMiniGame();
+
+            break;
+
+          case 'showResources':
+
+            showResources();
+
+            break;
+
+          case 'hideResources':
+
+            hideResources();
+
+            break;
+
+          case 'showAchievements':
+
+            showAchievements();
+
+            break;
+
+          case 'hideAchievements':
+
+            hideAchievements();
+
+            break;
+
+        }
+
+      }
+
+    });
+
+
+
+    // Function to show Bitcoin attributes playlist
+
+    function showAttributes() {
+
+      hideAll();
+
+      document.getElementById('attributes-playlist').classList.remove('hidden');
+
+    }
+
+
+
+    // Function to show Saylor's rules playlist
+
+    function showRules() {
+
+      hideAll();
+
+      document.getElementById('rules-playlist').classList.remove('hidden');
+
+    }
+
+
+
+    // Function to choose an attribute
+
+    function chooseAttribute(attribute) {
+
+      hideAll();
+
+      document.getElementById(`scenario-${attribute}`).classList.remove('hidden');
+
+    }
+
+
+
+    // Function to choose a rule
+
+    function chooseRule(rule) {
+
+      hideAll();
+
+      document.getElementById(`scenario-${rule}`).classList.remove('hidden');
+
+    }
+
+
+
+    // Function to update achievements display
+
+    function updateAchievements() {
+
+      if (appState.achievements.decentralization) {
+
+        document.getElementById('achievement-decentralization').classList.add('completed');
+
+      }
+
+      if (appState.achievements.rule1) {
+
+        document.getElementById('achievement-rule1').classList.add('completed');
+
+      }
+
+    }
+
+
+
+    // Function to show achievements modal
+
+    function showAchievements() {
+
+      document.getElementById('achievements-modal').classList.remove('hidden');
+
+    }
+
+
+
+    // Function to hide achievements modal
+
+    function hideAchievements() {
+
+      document.getElementById('achievements-modal').classList.add('hidden');
+
+    }
+
+
+
+    // Function to show resources modal
+
+    function showResources() {
+
+      document.getElementById('resources-modal').classList.remove('hidden');
+
+    }
+
+
+
+    // Function to hide resources modal
+
+    function hideResources() {
+
+      document.getElementById('resources-modal').classList.add('hidden');
+
+    }
+
+
+
+    // Function to go back to the playlist
+
+    function backToPlaylist() {
+
+      hideAll();
+
+      document.getElementById('attributes-playlist').classList.remove('hidden');
+
+    }
+
+
+
+    // Function to go back to the intro
+
+    function backToIntro() {
+
+      hideAll();
+
+      document.getElementById('intro').classList.remove('hidden');
+
+    }
+
+
+
+    // Function to hide all scenarios/modals
+
+    function hideAll() {
+
+      document.querySelectorAll('.container > div').forEach(section => {
+
+        section.classList.add('hidden');
+
+      });
+
+    }
+
+
+
+    // Function to open a mini-game
+
+    function openMiniGame(minigame) {
+
+      hideAll();
+
+      document.getElementById(`minigame-${minigame}`).classList.remove('hidden');
+
+    }
+
+
+
+    // Function to close the current mini-game
+
+    function closeMiniGame() {
+
+      document.querySelector('.minigame-container').classList.add('hidden');
+
+      document.getElementById('intro').classList.remove('hidden');
+
+    }
+
+  </script>
+
+</body>
+
+</html>
